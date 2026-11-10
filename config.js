@@ -17,7 +17,7 @@ window.CONFIG = {
 
 
   /* ===== การตอบคำถาม ===== */
-  MODEL: "google/gemma-4-31b:free",
+  MODEL: "google/gemma-4-26b-a4b-it:free",
 
 
   /* ===== เอกสาร ===== */
