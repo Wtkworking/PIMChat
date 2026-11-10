@@ -65,7 +65,7 @@
 
   <div class="card">
     <div class="row">
-      <input id="key" type="password" placeholder="วางกุญแจ OpenRouter ที่นี่  ขึ้นต้นด้วย sk-or-">
+      <input id="key" type="password" placeholder="ถ้าใช้ Worker ไม่ต้องใส่อะไร  ถ้าเรียกตรงให้วางกุญแจ sk-or-">
       <button id="go">เริ่มสร้าง</button>
     </div>
     <div id="log">พร้อมเริ่ม  กุญแจที่ใส่จะอยู่ในเบราว์เซอร์นี้เท่านั้น ไม่ถูกบันทึกที่ไหน</div>
@@ -99,7 +99,9 @@ $("go").addEventListener("click", async () => {
   if (!C) { log("ไม่พบ config.js  วางไฟล์นี้ไว้โฟลเดอร์เดียวกัน"); return; }
 
   const key = $("key").value.trim();
-  if (!key) { log("ยังไม่ได้ใส่กุญแจ OpenRouter"); return; }
+  const viaWorker = C.PROVIDER === "worker";
+  if (!viaWorker && !key) { log("ยังไม่ได้ใส่กุญแจ OpenRouter"); return; }
+  if (viaWorker && !C.WORKER_URL) { log("ตั้ง PROVIDER เป็น worker แต่ยังไม่ได้ใส่ WORKER_URL ใน config.js"); return; }
 
   $("go").disabled = true;
   $("log").textContent = "เริ่มทำงาน";
@@ -122,9 +124,15 @@ $("go").addEventListener("click", async () => {
 
     // 3 แปลงเป็นเวกเตอร์  ส่งทีเดียวทั้งก้อน
     log(`\nกำลังส่งให้ OpenRouter แปลงเป็นเวกเตอร์...`);
-    const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
+    const url = viaWorker
+      ? (C.WORKER_URL || "").replace(/\/+$/, "") + "/api/v1/embeddings"
+      : "https://openrouter.ai/api/v1/embeddings";
+    const auth = viaWorker ? {} : { "Authorization": "Bearer " + key };
+    log(viaWorker ? "ส่งผ่าน Worker" : "เรียก OpenRouter ตรง");
+
+    const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+      headers: { "Content-Type": "application/json", ...auth },
       body: JSON.stringify({
         model: C.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
         input: chunks.map(c => c.text),
