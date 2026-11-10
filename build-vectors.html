@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สร้างไฟล์เวกเตอร์ · AjGolf AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1531a4; --blue2:#2867cc; --navy:#12224f; --teal:#0e8c8c; --pink:#cd0e5d;
+    --line:#d6ddee; --tint:#f2f6fd; --muted:#5c6478; --bg:#f6f8fc; --card:#fff;
+    color-scheme: light;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --blue:#89a7f2; --blue2:#6f98e8; --navy:#e8edf8; --teal:#4fc4bd; --pink:#f0749f;
+      --line:#2c3652; --tint:#1a2238; --muted:#9aa6c0; --bg:#0f1525; --card:#171f33;
+      color-scheme: dark;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; padding:30px 16px 60px; background:var(--bg); color:var(--navy);
+       font-family:'Prompt',system-ui,sans-serif; line-height:1.7}
+  .wrap{max-width:780px; margin:0 auto}
+  h1{font-size:25px; color:var(--blue); margin:0 0 6px}
+  .sub{margin:0 0 18px; color:var(--muted); font-size:15px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-top:16px}
+  ol{margin:6px 0 0; padding-left:22px}
+  li{margin:6px 0; font-size:14.5px}
+  .row{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  input{flex:1; min-width:240px; padding:11px 14px; font-family:inherit; font-size:15px;
+    border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--navy)}
+  button{padding:11px 24px; font-family:inherit; font-size:15px; font-weight:500;
+    border:0; border-radius:10px; background:var(--blue); color:#fff; cursor:pointer}
+  button:disabled{opacity:.45; cursor:default}
+  #log{margin-top:14px; font-family:ui-monospace,Consolas,monospace; font-size:13px;
+    white-space:pre-wrap; background:var(--tint); border:1px solid var(--line);
+    border-radius:10px; padding:14px; min-height:90px}
+  code{font-family:ui-monospace,Consolas,monospace; background:var(--tint);
+    border:1px solid var(--line); padding:2px 6px; border-radius:6px; font-size:13px}
+  a{color:var(--blue2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>สร้างไฟล์เวกเตอร์</h1>
+  <p class="sub">เครื่องมือนี้ใช้ครั้งเดียวตอนเตรียมเอกสาร  ไม่ได้เป็นส่วนหนึ่งของเว็บแชตบอต</p>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px; font-size:17px">ทำอะไร</h2>
+    <ol>
+      <li>อ่านไฟล์เอกสารทั้งหมดตามรายการใน <code>config.js</code></li>
+      <li>หั่นเป็นชิ้นเล็ก</li>
+      <li>ส่งไปให้ OpenRouter แปลงเป็นเวกเตอร์ <b>ครั้งเดียว</b></li>
+      <li>ให้ดาวน์โหลดไฟล์ <code>vectors.json</code> ออกมา</li>
+    </ol>
+    <p style="font-size:14.5px; margin-top:10px">
+      จากนั้นเอาไฟล์นั้นอัปขึ้น GitHub ชั้นเดียวกับ <code>index.html</code>
+      <br>เว็บแชตบอตจะโหลดไฟล์นี้ไปใช้ จึงไม่ต้องแปลงเอกสารซ้ำอีกเลย
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="key" type="password" placeholder="วางกุญแจ OpenRouter ที่นี่  ขึ้นต้นด้วย sk-or-">
+      <button id="go">เริ่มสร้าง</button>
+    </div>
+    <div id="log">พร้อมเริ่ม  กุญแจที่ใส่จะอยู่ในเบราว์เซอร์นี้เท่านั้น ไม่ถูกบันทึกที่ไหน</div>
+    <div class="row" style="margin-top:10px">
+      <button id="dl" disabled>ดาวน์โหลด vectors.json</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let OUT = null;
+
+function log(t){ $("log").textContent += "\n" + t; $("log").scrollTop = 1e9; }
+
+function chunkAll(texts, size, over){
+  const out = [];
+  for (const { name, text } of texts) {
+    let s = 0, p = 1;
+    while (s < text.length) {
+      out.push({ source: name, part: p, text: text.slice(s, s + size) });
+      s += size - over; p++;
+    }
+  }
+  return out;
+}
+
+$("go").addEventListener("click", async () => {
+  const C = window.CONFIG;
+  if (!C) { log("ไม่พบ config.js  วางไฟล์นี้ไว้โฟลเดอร์เดียวกัน"); return; }
+
+  const key = $("key").value.trim();
+  if (!key) { log("ยังไม่ได้ใส่กุญแจ OpenRouter"); return; }
+
+  $("go").disabled = true;
+  $("log").textContent = "เริ่มทำงาน";
+
+  try {
+    // 1 อ่านเอกสาร
+    const base = (C.DOCS_BASE || "").replace(/\/+$/, "");
+    const texts = [];
+    for (const f of C.FILES) {
+      const url = base ? `${base}/${f}` : f;
+      const r = await fetch(url + "?t=" + Date.now());
+      if (!r.ok) throw new Error(`อ่าน ${url} ไม่ได้  รหัส ${r.status}`);
+      texts.push({ name: f, text: (await r.text()).trim() });
+      log(`อ่าน ${f}  ${texts[texts.length-1].text.length} ตัวอักษร`);
+    }
+
+    // 2 หั่น
+    const chunks = chunkAll(texts, C.CHUNK_SIZE || 500, C.OVERLAP || 100);
+    log(`\nหั่นได้ ${chunks.length} ชิ้น จาก ${texts.length} ไฟล์`);
+
+    // 3 แปลงเป็นเวกเตอร์  ส่งทีเดียวทั้งก้อน
+    log(`\nกำลังส่งให้ OpenRouter แปลงเป็นเวกเตอร์...`);
+    const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+      body: JSON.stringify({
+        model: C.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
+        input: chunks.map(c => c.text),
+      }),
+    });
+    if (!res.ok) throw new Error(`OpenRouter ตอบกลับ ${res.status}\n${(await res.text()).slice(0, 300)}`);
+    const data = await res.json();
+    const vecs = (data.data || []).map(d => d.embedding);
+    if (vecs.length !== chunks.length)
+      throw new Error(`ได้เวกเตอร์ ${vecs.length} ชิ้น แต่เอกสารมี ${chunks.length} ชิ้น`);
+
+    // ทำความยาวเป็นหนึ่ง  จะได้เทียบความใกล้ด้วยการคูณตรง ๆ
+    const unit = (v) => { const n = Math.hypot(...v); return v.map(x => +(x / n).toFixed(6)); };
+
+    OUT = {
+      model: C.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
+      dim: vecs[0].length,
+      created: new Date().toISOString().slice(0, 16).replace("T", " "),
+      chunks: chunks.map((c, i) => ({
+        source: c.source, part: c.part, text: c.text, v: unit(vecs[i]),
+      })),
+    };
+
+    log(`\nสำเร็จ`);
+    log(`เวกเตอร์ ${vecs.length} ชิ้น  ขนาดมิติละ ${OUT.dim}`);
+    log(`ขนาดไฟล์โดยประมาณ ${(JSON.stringify(OUT).length / 1024).toFixed(0)} KB`);
+    log(`\nกดปุ่มดาวน์โหลดด้านล่าง แล้วอัปไฟล์ขึ้น GitHub`);
+    $("dl").disabled = false;
+  } catch (e) {
+    log(`\nไม่สำเร็จ\n${e.message}`);
+    $("go").disabled = false;
+  }
+});
+
+$("dl").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(OUT)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "vectors.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>

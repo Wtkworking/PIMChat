@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AjGolf AI · ผู้ช่วยตอบคำถาม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1531a4; --blue2:#2867cc; --navy:#12224f; --pink:#cd0e5d; --teal:#0e8c8c;
+    --line:#d6ddee; --tint:#f2f6fd; --muted:#5c6478;
+    --bg:#f6f8fc; --card:#fff;
+    color-scheme: light;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --blue:#89a7f2; --blue2:#6f98e8; --navy:#e8edf8; --pink:#f0749f; --teal:#4fc4bd;
+      --line:#2c3652; --tint:#1a2238; --muted:#9aa6c0;
+      --bg:#0f1525; --card:#171f33;
+      color-scheme: dark;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-padding-top: env(safe-area-inset-top, 0px)}
+  body{margin:0; padding:0 16px 48px; background:var(--bg); color:var(--navy);
+       font-family:'Prompt',system-ui,sans-serif; line-height:1.7}
+  .wrap{max-width:900px; margin:0 auto}
+
+  header{padding:34px 0 4px}
+  .logo{display:inline-flex; align-items:center; gap:11px; font-size:29px; font-weight:600; color:var(--blue)}
+  .logo .dot{width:37px; height:37px; border-radius:11px;
+    background:linear-gradient(135deg,#1531a4,#cd0e5d);
+    display:grid; place-items:center; color:#fff; font-size:15px; font-weight:600}
+  .tagline{margin:8px 0 0; color:var(--muted); font-size:15px}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px;
+        padding:18px 20px; margin-top:16px}
+  h2{margin:0 0 9px; font-size:18px; font-weight:600}
+
+  .banner{display:flex; gap:11px; align-items:flex-start; background:var(--tint);
+    border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+    margin-top:18px; font-size:14.5px}
+  .banner b{color:var(--blue)}
+  a{color:var(--blue2)}
+
+  #boot{margin:0 0 6px; font-size:13.5px; color:var(--muted); white-space:pre-wrap}
+
+  .chat{height:340px; overflow-y:auto; padding:4px 2px 8px}
+  .msg{max-width:82%; padding:11px 15px; border-radius:14px; margin:9px 0;
+       font-size:15px; white-space:pre-wrap}
+  .me{margin-left:auto; background:var(--blue); color:#fff; border-bottom-right-radius:5px}
+  .bot{background:var(--tint); border:1px solid var(--line); border-bottom-left-radius:5px}
+  .bot .ref{display:block; margin-top:8px; font-size:12.5px; color:var(--muted)}
+
+  .row{display:flex; gap:10px; margin-top:12px}
+  input{flex:1; padding:11px 14px; font-family:inherit; font-size:15px;
+    border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--navy)}
+  input:focus{outline:2px solid var(--blue2); outline-offset:1px}
+  button{padding:11px 22px; font-family:inherit; font-size:15px; font-weight:500;
+    border:0; border-radius:10px; background:var(--blue); color:#fff; cursor:pointer}
+  button:disabled{opacity:.45; cursor:default}
+
+  .chips{margin-top:11px; display:flex; flex-wrap:wrap; gap:8px}
+  .chips span{font-size:13px; padding:6px 12px; border:1px solid var(--line);
+    border-radius:999px; cursor:pointer; color:var(--muted); background:var(--card)}
+  .chips span:hover{border-color:var(--blue2); color:var(--blue2)}
+
+  footer{margin-top:28px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:13px; color:var(--muted); text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo"><span class="dot">AI</span> AjGolf AI</div>
+    <p class="tagline">ผู้ช่วยตอบคำถามจากเอกสารของคณะ</p>
+  </header>
+
+  <div class="banner">
+    <span style="font-size:19px">⚠️</span>
+    <div>
+      <b>นี่คือผู้ช่วยอัตโนมัติ ไม่ใช่เจ้าหน้าที่</b><br>
+      คำตอบอาจคลาดเคลื่อน กรุณาตรวจสอบกับเอกสารต้นฉบับก่อนใช้อ้างอิง<br>
+      ทุกคำตอบจะบอกด้วยว่ามาจากไฟล์ไหน เพื่อให้ตรวจสอบย้อนกลับได้<br>
+      ต้องการคุยกับเจ้าหน้าที่จริง ติดต่อ <a href="tel:020000002">ฝ่ายวิชาการ 0-2000-0002</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ถามคำถาม</h2>
+    <p id="boot">กำลังเตรียมระบบ...</p>
+    <div class="chat" id="chat"></div>
+    <div class="row">
+      <input id="q" type="text" placeholder="พิมพ์คำถามแล้วกด Enter" disabled>
+      <button id="send" disabled>ถาม</button>
+    </div>
+    <div class="chips">
+      <span>ลาป่วยกี่วันต้องมีใบรับรองแพทย์</span>
+      <span>ลาพักการศึกษาได้กี่ภาค</span>
+      <span>ถอนรายวิชาแล้วติด W ไหม</span>
+      <span>หอพักค่าเช่าเท่าไร</span>
+    </div>
+  </div>
+
+  <footer>AjGolf AI · รายวิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง · สัปดาห์ที่ 8</footer>
+</div>
+
+<script>
+/* โหลด config.js แบบกันเบราว์เซอร์จำไฟล์เก่า */
+(function(){
+  const s = document.createElement("script");
+  s.src = "config.js?t=" + Date.now();
+  s.onerror = () => {
+    document.getElementById("boot").textContent =
+      "ไม่พบไฟล์ config.js\n\nตรวจว่าอัปไฟล์ config.js ไว้โฟลเดอร์เดียวกับ index.html แล้วหรือยัง";
+  };
+  s.onload = () => window.__startApp && window.__startApp();
+  document.head.appendChild(s);
+})();
+</script>
+
+<script>
+/* ==================================================================
+   AjGolf AI  รุ่นที่สาม
+
+   ค้นหามีสองโหมด  สลับได้ที่ SEARCH_MODE ใน config.js
+     "vector"  ใช้เวกเตอร์จาก OpenRouter  ค้นด้วยความหมาย  ตรงกับที่สอนในสไลด์
+     "local"   เทียบตัวอักษรในเบราว์เซอร์  ไม่ต้องมีกุญแจ ไม่มีวันล่ม
+
+   โหมด vector ใช้ไฟล์ vectors.json ที่สร้างไว้ล่วงหน้า
+   จึงเรียก API แค่ครั้งเดียวต่อคำถาม ไม่ใช่ทุกชิ้นเอกสาร
+   และใช้กุญแจ OpenRouter อันเดียวกับตอนตอบคำถาม
+
+   ถ้าโหมด vector มีปัญหา จะถอยไปใช้ local ให้อัตโนมัติ
+   ================================================================== */
+
+const PROVIDERS = {
+  openrouter: {
+    name: "OpenRouter",
+    url: "https://openrouter.ai/api/v1/chat/completions",
+    auth: (k) => ({ "Authorization": "Bearer " + k }),
+    style: "openai",
+  },
+  groq: {
+    name: "Groq",
+    url: "https://api.groq.com/openai/v1/chat/completions",
+    auth: (k) => ({ "Authorization": "Bearer " + k }),
+    style: "openai",
+  },
+  openai: {
+    name: "OpenAI",
+    url: "https://api.openai.com/v1/chat/completions",
+    auth: (k) => ({ "Authorization": "Bearer " + k }),
+    style: "openai",
+  },
+  gemini: {
+    name: "Google Gemini",
+    url: null,                                  // ประกอบจากชื่อรุ่นทีหลัง
+    auth: (k) => ({ "x-goog-api-key": k }),
+    style: "gemini",
+  },
+};
+
+let CFG = {}, CHUNKS = [], INDEX = [];
+let VEC = null;            // ข้อมูลจาก vectors.json
+let MODE = "local";        // โหมดที่ใช้งานจริง
+let FELL_BACK = false;     // เคยถอยจาก vector มา local หรือยัง
+const $ = (id) => document.getElementById(id);
+const boot = (t) => { $("boot").textContent = t; };
+
+/* ---------- ขั้นที่ 1  หั่นเอกสาร ---------- */
+async function buildChunks(){
+  const out = [];
+  const base = (CFG.DOCS_BASE || "").replace(/\/+$/, "");
+  for (const f of CFG.FILES) {
+    const url = base ? `${base}/${f}` : f;
+    let text;
+    try {
+      const r = await fetch(url + "?t=" + Date.now());
+      if (!r.ok) throw new Error(r.status);
+      text = (await r.text()).trim();
+    } catch {
+      throw new Error(`อ่านไฟล์ ${url} ไม่ได้\nตรวจว่าไฟล์อยู่ที่เดียวกับ index.html และชื่อสะกดตรงกับรายการ FILES`);
+    }
+    let start = 0, part = 1;
+    while (start < text.length) {
+      out.push({ source: f, part, text: text.slice(start, start + (CFG.CHUNK_SIZE || 500)) });
+      start += (CFG.CHUNK_SIZE || 500) - (CFG.OVERLAP || 100);
+      part++;
+    }
+  }
+  return out;
+}
+
+/* ---------- ขั้นที่ 2  ทำดัชนีไว้ค้น  ทำในเบราว์เซอร์ ไม่เรียก API ----------
+   ใช้วิธีนับชุดตัวอักษรสามตัวติดกัน
+   เหมาะกับภาษาไทยเพราะไม่ต้องตัดคำก่อน                                  */
+function grams(s, n = 3){
+  const t = s.replace(/\s+/g, "");
+  const m = new Map();
+  for (let i = 0; i + n <= t.length; i++) {
+    const g = t.slice(i, i + n);
+    m.set(g, (m.get(g) || 0) + 1);
+  }
+  let sum = 0;
+  for (const v of m.values()) sum += v * v;
+  return { m, norm: Math.sqrt(sum) || 1 };
+}
+
+function similarity(a, b){
+  let num = 0;
+  const [small, big] = a.m.size < b.m.size ? [a, b] : [b, a];
+  for (const [g, v] of small.m) {
+    const w = big.m.get(g);
+    if (w) num += v * w;
+  }
+  return num / (a.norm * b.norm);
+}
+
+/* ---------- ขั้นที่ 3  ค้นหา ---------- */
+function search(question){
+  const q = grams(question);
+  return INDEX
+    .map((g, i) => ({ i, score: similarity(g, q) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, CFG.TOP_K || 3)
+    .map(({ i, score }) => ({ ...CHUNKS[i], score: Math.round(score * 1000) / 1000 }));
+}
+
+/* ---------- โหมดเวกเตอร์  โหลดไฟล์ที่สร้างไว้ล่วงหน้า ---------- */
+async function loadVectors(){
+  const r = await fetch((CFG.VECTORS_FILE || "vectors.json") + "?t=" + Date.now());
+  if (!r.ok) throw new Error(`อ่านไฟล์ ${CFG.VECTORS_FILE || "vectors.json"} ไม่ได้  รหัส ${r.status}`);
+  const d = await r.json();
+  if (!d.chunks || !d.chunks.length) throw new Error("ไฟล์เวกเตอร์ว่างเปล่า");
+  return d;
+}
+
+/* แปลงคำถามเป็นเวกเตอร์  เรียกหนึ่งครั้งต่อคำถาม
+   ใช้กุญแจตัวเดียวกับตอนตอบคำถาม และต้องใช้รุ่นเดียวกับตอนสร้าง vectors.json */
+async function embedQuestion(q){
+  const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + CFG.KEY },
+    body: JSON.stringify({
+      model: VEC.model || CFG.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
+      input: [q],
+    }),
+  });
+  if (!res.ok) throw new Error(`แปลงคำถามไม่สำเร็จ ${res.status}  ${(await res.text()).slice(0, 180)}`);
+  const d = await res.json();
+  const v = d.data?.[0]?.embedding;
+  if (!v) throw new Error("ไม่ได้รับเวกเตอร์กลับมา");
+  const n = Math.hypot(...v);
+  return v.map(x => x / n);
+}
+
+function searchVector(qv){
+  return VEC.chunks
+    .map((c, i) => ({ i, score: c.v.reduce((s, x, k) => s + x * qv[k], 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, CFG.TOP_K || 3)
+    .map(({ i, score }) => ({
+      source: VEC.chunks[i].source, part: VEC.chunks[i].part,
+      text: VEC.chunks[i].text, score: Math.round(score * 1000) / 1000,
+    }));
+}
+
+/* เลือกวิธีค้นตามโหมด  ถ้าโหมดเวกเตอร์พัง ให้ถอยไป local */
+async function findChunks(question){
+  if (MODE === "vector") {
+    try {
+      const qv = await embedQuestion(question);
+      return { found: searchVector(qv), how: "เวกเตอร์" };
+    } catch (e) {
+      MODE = "local";
+      FELL_BACK = true;
+      console.warn("โหมดเวกเตอร์มีปัญหา ถอยไปใช้การเทียบตัวอักษร :", e.message);
+      boot(bootLine() + "   (โหมดเวกเตอร์ใช้ไม่ได้ จึงสลับมาเทียบตัวอักษร)");
+    }
+  }
+  return { found: search(question), how: "เทียบตัวอักษร" };
+}
+
+/* ---------- ขั้นที่ 4  ประกอบคำสั่งแล้วส่งให้ LLM ---------- */
+function makePrompt(question, found){
+  const docs = found.map((f, i) =>
+    `[ชิ้นที่ ${i + 1}  จากไฟล์ ${f.source}]\n${f.text}`).join("\n\n");
+  return `คุณคือผู้ช่วยตอบคำถามของคณะบริหารธุรกิจ
+ให้ตอบโดยใช้เฉพาะข้อมูลในเอกสารด้านล่างเท่านั้น
+
+ถ้าเอกสารไม่มีคำตอบ ให้ตอบว่า "ไม่พบข้อมูลนี้ในเอกสารของคณะ"
+แล้วแนะนำให้ติดต่อฝ่ายวิชาการ  ห้ามเดา ห้ามเติมข้อมูลจากความรู้ทั่วไป
+
+ตอบเป็นภาษาไทย สั้น กระชับ
+
+เอกสารที่ค้นเจอ
+${docs}
+
+คำถามจากผู้ใช้
+${question}`;
+}
+
+async function askLLM(prompt){
+  const p = PROVIDERS[CFG.PROVIDER];
+  if (!p) throw new Error(`ไม่รู้จักผู้ให้บริการชื่อ ${CFG.PROVIDER}\nเลือกได้จาก ${Object.keys(PROVIDERS).join("  ")}`);
+
+  let url, body;
+  if (p.style === "gemini") {
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${CFG.MODEL}:generateContent`;
+    body = { contents: [{ parts: [{ text: prompt }] }] };
+  } else {
+    url = p.url;
+    body = { model: CFG.MODEL, messages: [{ role: "user", content: prompt }] };
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...p.auth(CFG.KEY) },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`${res.status}  ${t.slice(0, 250)}`);
+  }
+  const d = await res.json();
+  return p.style === "gemini"
+    ? (d.candidates?.[0]?.content?.parts?.[0]?.text ?? "ไม่ได้รับคำตอบกลับมา")
+    : (d.choices?.[0]?.message?.content ?? "ไม่ได้รับคำตอบกลับมา");
+}
+
+function bootLine(){
+  const files = new Set(CHUNKS.map(c => c.source)).size;
+  const pv = PROVIDERS[CFG.PROVIDER]?.name ?? CFG.PROVIDER;
+  const m = MODE === "vector" ? "เวกเตอร์" : "เทียบตัวอักษร";
+  return `พร้อมใช้งาน   เอกสาร ${files} ไฟล์  ${CHUNKS.length} ชิ้น   `
+       + `ค้นแบบ ${m}   ตอบด้วย ${pv}`;
+}
+
+/* ---------- เริ่มระบบ ---------- */
+window.__startApp = async () => {
+  CFG = window.CONFIG || {};
+  CFG.KEY = (CFG.KEY || "").trim();
+
+  if (!CFG.KEY || CFG.KEY.startsWith("ใส่กุญแจ")) {
+    boot("ยังไม่ได้ใส่กุญแจ  หรือเบราว์เซอร์ยังใช้ไฟล์เก่า\n\n"
+       + "1 เปิด config.js ตรง ๆ ในแท็บใหม่ ดูว่ามีกุญแจจริงไหม\n"
+       + "2 ถ้ามี ให้กด Ctrl และ Shift และ R\n"
+       + "3 ถ้าไม่มี แปลว่ายังไม่ได้ Commit");
+    return;
+  }
+  if (!CFG.FILES || !CFG.FILES.length) {
+    boot("ไม่มีรายชื่อไฟล์เอกสาร\n\nตรวจรายการ FILES ในไฟล์ config.js");
+    return;
+  }
+
+  try {
+    boot("กำลังอ่านเอกสาร...");
+    CHUNKS = await buildChunks();
+    INDEX = CHUNKS.map(c => grams(c.text));     // เตรียมโหมดสำรองไว้เสมอ
+
+    MODE = "local";
+    if ((CFG.SEARCH_MODE || "local") === "vector") {
+      try {
+        boot("กำลังโหลดไฟล์เวกเตอร์...");
+        VEC = await loadVectors();
+        MODE = "vector";
+      } catch (e) {
+        console.warn("โหลดไฟล์เวกเตอร์ไม่ได้ จึงใช้โหมด local :", e.message);
+      }
+    }
+
+    boot(bootLine());
+
+    $("q").disabled = false;
+    $("send").disabled = false;
+    add("สวัสดีครับ ถามคำถามเกี่ยวกับระเบียบของคณะได้เลย", "bot");
+  } catch (e) {
+    boot("เริ่มไม่สำเร็จ\n\n" + e.message);
+  }
+};
+
+/* ---------- ถามตอบ ---------- */
+function add(text, who, ref){
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  d.textContent = text;
+  if (ref) {
+    const s = document.createElement("span");
+    s.className = "ref"; s.textContent = ref;
+    d.appendChild(s);
+  }
+  $("chat").appendChild(d);
+  $("chat").scrollTop = $("chat").scrollHeight;
+  return d;
+}
+
+async function ask(){
+  const text = $("q").value.trim();
+  if (!text || !INDEX.length) return;
+  $("q").value = "";
+  add(text, "me");
+  const holder = add("กำลังค้นเอกสารและเรียบเรียงคำตอบ...", "bot");
+
+  try {
+    const { found, how } = await findChunks(text);
+    const answer = await askLLM(makePrompt(text, found));
+    holder.textContent = answer;
+    const s = document.createElement("span");
+    s.className = "ref";
+    s.textContent = `อ้างอิงจาก  ค้นแบบ${how}   ` +
+      found.map(f => `${f.source} ส่วนที่ ${f.part} (${f.score})`).join("   ");
+    holder.appendChild(s);
+  } catch (e) {
+    const m = e.message || String(e);
+    holder.textContent =
+        m.includes("429") ? "เรียกใช้บริการบ่อยเกินกำหนด  รอสักครู่แล้วถามใหม่"
+      : m.includes("401") || m.includes("403")
+        ? "กุญแจใช้ไม่ได้\n\n" + m + "\n\nตรวจว่า PROVIDER กับ KEY ใน config.js เป็นของเจ้าเดียวกัน"
+      : "เกิดข้อผิดพลาด\n\n" + m;
+  }
+  $("chat").scrollTop = $("chat").scrollHeight;
+}
+
+$("send").addEventListener("click", ask);
+$("q").addEventListener("keydown", e => { if (e.key === "Enter") ask(); });
+document.querySelectorAll(".chips span").forEach(el => {
+  el.addEventListener("click", () => { $("q").value = el.textContent; ask(); });
+});
+</script>
+</body>
+</html>
