@@ -11,7 +11,7 @@ window.CONFIG = {
 
   /* ===== กุญแจ  ใช้อันเดียวทั้งระบบ ===== */
   // ขอที่  openrouter.ai  ที่เมนู Keys
-  KEY: "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",
+  KEY: "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",
 
 
   /* ===== การค้นหา ===== */
