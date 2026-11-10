@@ -17,7 +17,7 @@ window.CONFIG = {
 
 
   /* ===== การตอบคำถาม ===== */
-  MODEL: "google/gemma-4-26b-a4b-it:free",
+  MODEL: "nvidia/nemotron-3.5-super-vl:free",
 
 
   /* ===== เอกสาร ===== */
