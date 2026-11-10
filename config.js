@@ -11,7 +11,7 @@ window.CONFIG = {
 
   /* ===== กุญแจ  ใช้อันเดียวทั้งระบบ ===== */
   // ขอที่  openrouter.ai  ที่เมนู Keys
-  KEY: "ใส่กุญแจ OpenRouter ตรงนี้",
+  KEY: "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",
 
 
   /* ===== การค้นหา ===== */
@@ -43,7 +43,7 @@ window.CONFIG = {
   /* ===== เอกสาร ===== */
 
   // ไฟล์ .txt อยู่ชั้นเดียวกับ index.html  ใส่ค่าว่าง  ""
-  DOCS_BASE: "",
+  DOCS_BASE: "docs",
 
   FILES: [
     "01-leave.txt",
