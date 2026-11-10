@@ -135,12 +135,21 @@
 
    โหมด vector ใช้ไฟล์ vectors.json ที่สร้างไว้ล่วงหน้า
    จึงเรียก API แค่ครั้งเดียวต่อคำถาม ไม่ใช่ทุกชิ้นเอกสาร
-   และใช้กุญแจ OpenRouter อันเดียวกับตอนตอบคำถาม
+
+   ถ้า PROVIDER เป็น "worker"  หน้าเว็บนี้ไม่มีกุญแจอยู่เลย
+   ทุกคำขอส่งผ่าน Cloudflare Worker ซึ่งเติมกุญแจให้บนเซิร์ฟเวอร์
 
    ถ้าโหมด vector มีปัญหา จะถอยไปใช้ local ให้อัตโนมัติ
    ================================================================== */
 
 const PROVIDERS = {
+  // ส่งผ่าน Cloudflare Worker  กุญแจอยู่บนเซิร์ฟเวอร์ ไม่มีในหน้าเว็บ
+  worker: {
+    name: "Worker",
+    url: null,                                  // ประกอบจาก WORKER_URL
+    auth: () => ({}),                           // ไม่ต้องส่งกุญแจ
+    style: "openai",
+  },
   openrouter: {
     name: "OpenRouter",
     url: "https://openrouter.ai/api/v1/chat/completions",
@@ -168,6 +177,13 @@ const PROVIDERS = {
 };
 
 let CFG = {}, CHUNKS = [], INDEX = [];
+
+/* ประกอบที่อยู่ของ Worker  ตัดทับปิดท้ายออกให้เอง */
+function workerURL(path){
+  const base = (CFG.WORKER_URL || "").replace(/\/+$/, "");
+  if (!base) throw new Error("ยังไม่ได้ใส่ WORKER_URL ใน config.js");
+  return base + path;
+}
 let VEC = null;            // ข้อมูลจาก vectors.json
 let MODE = "local";        // โหมดที่ใช้งานจริง
 let FELL_BACK = false;     // เคยถอยจาก vector มา local หรือยัง
@@ -245,9 +261,15 @@ async function loadVectors(){
 /* แปลงคำถามเป็นเวกเตอร์  เรียกหนึ่งครั้งต่อคำถาม
    ใช้กุญแจตัวเดียวกับตอนตอบคำถาม และต้องใช้รุ่นเดียวกับตอนสร้าง vectors.json */
 async function embedQuestion(q){
-  const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
+  const viaWorker = CFG.PROVIDER === "worker";
+  const url = viaWorker
+    ? workerURL("/api/v1/embeddings")
+    : "https://openrouter.ai/api/v1/embeddings";
+  const auth = viaWorker ? {} : { "Authorization": "Bearer " + CFG.KEY };
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + CFG.KEY },
+    headers: { "Content-Type": "application/json", ...auth },
     body: JSON.stringify({
       model: VEC.model || CFG.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
       input: [q],
@@ -316,7 +338,9 @@ async function askLLM(prompt){
     url = `https://generativelanguage.googleapis.com/v1beta/models/${CFG.MODEL}:generateContent`;
     body = { contents: [{ parts: [{ text: prompt }] }] };
   } else {
-    url = p.url;
+    url = CFG.PROVIDER === "worker"
+      ? workerURL("/api/v1/chat/completions")
+      : p.url;
     body = { model: CFG.MODEL, messages: [{ role: "user", content: prompt }] };
   }
 
@@ -349,11 +373,16 @@ window.__startApp = async () => {
   CFG = window.CONFIG || {};
   CFG.KEY = (CFG.KEY || "").trim();
 
-  if (!CFG.KEY || CFG.KEY.startsWith("ใส่กุญแจ")) {
+  const needKey = CFG.PROVIDER !== "worker";
+  if (needKey && (!CFG.KEY || CFG.KEY.startsWith("ใส่กุญแจ"))) {
     boot("ยังไม่ได้ใส่กุญแจ  หรือเบราว์เซอร์ยังใช้ไฟล์เก่า\n\n"
        + "1 เปิด config.js ตรง ๆ ในแท็บใหม่ ดูว่ามีกุญแจจริงไหม\n"
        + "2 ถ้ามี ให้กด Ctrl และ Shift และ R\n"
        + "3 ถ้าไม่มี แปลว่ายังไม่ได้ Commit");
+    return;
+  }
+  if (CFG.PROVIDER === "worker" && !CFG.WORKER_URL) {
+    boot("ยังไม่ได้ใส่ที่อยู่ Worker\n\nแก้บรรทัด WORKER_URL ใน config.js ให้เป็นที่อยู่ของ Worker ที่สร้างไว้");
     return;
   }
   if (!CFG.FILES || !CFG.FILES.length) {
