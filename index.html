@@ -1,468 +1,304 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AjGolf AI · ผู้ช่วยตอบคำถาม</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIM สถาบันการจัดการปัญญาภิวัฒน์</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Bai+Jamjuree:wght@500;600;700&display=swap">
 <style>
-  :root{
-    --blue:#1531a4; --blue2:#2867cc; --navy:#12224f; --pink:#cd0e5d; --teal:#0e8c8c;
-    --line:#d6ddee; --tint:#f2f6fd; --muted:#5c6478;
-    --bg:#f6f8fc; --card:#fff;
-    color-scheme: light;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-sizing: border-box;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --blue:#89a7f2; --blue2:#6f98e8; --navy:#e8edf8; --pink:#f0749f; --teal:#4fc4bd;
-      --line:#2c3652; --tint:#1a2238; --muted:#9aa6c0;
-      --bg:#0f1525; --card:#171f33;
-      color-scheme: dark;
-    }
-  }
-  *{box-sizing:border-box}
-  html{scroll-padding-top: env(safe-area-inset-top, 0px)}
-  body{margin:0; padding:0 16px 48px; background:var(--bg); color:var(--navy);
-       font-family:'Prompt',system-ui,sans-serif; line-height:1.7}
-  .wrap{max-width:900px; margin:0 auto}
-
-  header{padding:34px 0 4px}
-  .logo{display:inline-flex; align-items:center; gap:11px; font-size:29px; font-weight:600; color:var(--blue)}
-  .logo .dot{width:37px; height:37px; border-radius:11px;
-    background:linear-gradient(135deg,#1531a4,#cd0e5d);
-    display:grid; place-items:center; color:#fff; font-size:15px; font-weight:600}
-  .tagline{margin:8px 0 0; color:var(--muted); font-size:15px}
-
-  .card{background:var(--card); border:1px solid var(--line); border-radius:14px;
-        padding:18px 20px; margin-top:16px}
-  h2{margin:0 0 9px; font-size:18px; font-weight:600}
-
-  .banner{display:flex; gap:11px; align-items:flex-start; background:var(--tint);
-    border:1px solid var(--line); border-radius:12px; padding:14px 16px;
-    margin-top:18px; font-size:14.5px}
-  .banner b{color:var(--blue)}
-  a{color:var(--blue2)}
-
-  #boot{margin:0 0 6px; font-size:13.5px; color:var(--muted); white-space:pre-wrap}
-
-  .chat{height:340px; overflow-y:auto; padding:4px 2px 8px}
-  .msg{max-width:82%; padding:11px 15px; border-radius:14px; margin:9px 0;
-       font-size:15px; white-space:pre-wrap}
-  .me{margin-left:auto; background:var(--blue); color:#fff; border-bottom-right-radius:5px}
-  .bot{background:var(--tint); border:1px solid var(--line); border-bottom-left-radius:5px}
-  .bot .ref{display:block; margin-top:8px; font-size:12.5px; color:var(--muted)}
-
-  .row{display:flex; gap:10px; margin-top:12px}
-  input{flex:1; padding:11px 14px; font-family:inherit; font-size:15px;
-    border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--navy)}
-  input:focus{outline:2px solid var(--blue2); outline-offset:1px}
-  button{padding:11px 22px; font-family:inherit; font-size:15px; font-weight:500;
-    border:0; border-radius:10px; background:var(--blue); color:#fff; cursor:pointer}
-  button:disabled{opacity:.45; cursor:default}
-
-  .chips{margin-top:11px; display:flex; flex-wrap:wrap; gap:8px}
-  .chips span{font-size:13px; padding:6px 12px; border:1px solid var(--line);
-    border-radius:999px; cursor:pointer; color:var(--muted); background:var(--card)}
-  .chips span:hover{border-color:var(--blue2); color:var(--blue2)}
-
-  footer{margin-top:28px; padding-top:16px; border-top:1px solid var(--line);
-    font-size:13px; color:var(--muted); text-align:center}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:4px}
+a:focus-visible,button:focus-visible{outline:3px solid #1B6FD1;outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div style="background: #EEF3EE; color: #14211D; font-family: 'Anuphan', 'Noto Sans Thai', 'Leelawadee UI', 'Thonburi', sans-serif; font-size: 17px; line-height: 1.7">
 
-  <header>
-    <div class="logo"><span class="dot">AI</span> AjGolf AI</div>
-    <p class="tagline">ผู้ช่วยตอบคำถามจากเอกสารของคณะ</p>
-  </header>
+<header>
+<div style="background: #0F3D33; color: #D5E3DB; font-size: 14px">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: 0 clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; column-gap: 24px">
+<span style="display: inline-flex; align-items: center; min-height: 60px"><img src="data:image/jpeg;base64,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GDw7/bkZbUdIOmXGM+bBIpVj/u54/wA81mX3w8v4yTa3EM6+jZRv6j9a9Boqa3D2CrL34+93Wj/DT8D1sPmWIoKyldeep4/qHgjVpEMVzpBnjJztIWQH8OaqP4MvLp4/tWgyTeUcxmW23bD6jI4r2uiuJcK0Iu8Kkl93/APQWf1bWlBP7zzDTPCuowgrDpjQhiWIChASep7c10lh4XvODO0cQ9M7jXV0V30MjoU9W2zkrZrVqaJJEFnZxWUXlx59ST1NT0UV68YqK5YrQ82UnJ3YUUUVQgooooAKKKKACiiigAooooAKKKKACiiigAooooAKgvbeS6t2iiuZLZm/5aRgFh+YqeilJJqzA4yf4axTytK+q3DuxyWdAxP1OaSP4Y2QP7y/uGH+yoH+NdpRXn/2ThL35Pz/AMzL2EOxztn4B0O1ILQSXBHeZyf0GBXP6/eeFLOeazGjytPExUmM+WAfrn+lehVSfRNNkvzfvZxNcnH7xhnp0OOmfeliMvi4KGHjGPe6voKVJWtFI4fSdH8U3i+ZaXd1Y2h5jW5uCTj6Af0FN1bSfE1iPNv7m7v7NeZBbXBHHuCP6GvR6Kz/ALIhycvPK/rp921vIXsFa12cB4euvCl/cRWS6PIk8pwDL+8BOPXP9K3LvwBod0SUhltye8T/ANDkVrQ6JptvfG+is4o7kgjeox168dM+9Xa0oZfH2fJiIxforaDjSVrSSOLk+GNmT+71C4Uf7Sg/4U63+G8VtKsseq3KOpyGjUKR+Oa7Kin/AGVhE7qH5/5j9hDsQ2kElvAsUtw9wy8eY4AJ/IVNRRXoJWVkahRRRTAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//Z" alt="ตราสถาบันการจัดการปัญญาภิวัฒน์" style="display: block; height: 48px; width: auto; box-sizing: border-box; padding: 3px; background: #FFFFFF; border-radius: 8px"></span>
+<nav aria-label="ทางลัดสำหรับผู้ใช้" style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 20px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">นักศึกษาปัจจุบัน</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">บุคลากร</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">ศิษย์เก่า</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">ห้องสมุด</a>
+<a href="#" lang="en" aria-label="เปลี่ยนเป็นภาษาอังกฤษ" style="display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; font-weight: 600; color: #FFFFFF">EN</a>
+</nav>
+</div>
+</div>
+<div style="background: #FFFFFF; border-bottom: 1px solid #D3DED6">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: 12px clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 32px">
+<a href="#top" style="display: flex; align-items: center; gap: 14px; min-height: 56px">
+<span style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 34px; line-height: 1; letter-spacing: 0.02em; color: #0F3D33">PIM</span>
+<span style="font-size: 14px; line-height: 1.35; color: #3F514A">สถาบันการจัดการ<br>ปัญญาภิวัฒน์</span>
+</a>
+<nav aria-label="เมนูหลัก" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0 26px; font-weight: 500; font-size: 16px">
+<a href="#about" style="display: inline-flex; align-items: center; min-height: 44px">เกี่ยวกับ PIM</a>
+<a href="#wbe" style="display: inline-flex; align-items: center; min-height: 44px">รูปแบบการเรียน</a>
+<a href="#faculties" style="display: inline-flex; align-items: center; min-height: 44px">คณะและหลักสูตร</a>
+<a href="#admissions" style="display: inline-flex; align-items: center; min-height: 44px">การรับสมัคร</a>
+<a href="#campuses" style="display: inline-flex; align-items: center; min-height: 44px">วิทยาเขต</a>
+<a href="#contact" style="display: inline-flex; align-items: center; min-height: 44px">ติดต่อ</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 12px">
+<button type="button" aria-label="ค้นหา" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #B9C9BF; border-radius: 22px; color: #14211D; cursor: pointer; padding: 0">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.8-3.8"></path></svg>
+</button>
+<a href="#admissions" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 22px; border-radius: 22px; background: #F2B01E; color: #14211D; font-weight: 600; font-size: 16px">สมัครเรียน</a>
+</div>
+</div>
+</div>
+</header>
 
-  <div class="banner">
-    <span style="font-size:19px">⚠️</span>
-    <div>
-      <b>นี่คือผู้ช่วยอัตโนมัติ ไม่ใช่เจ้าหน้าที่</b><br>
-      คำตอบอาจคลาดเคลื่อน กรุณาตรวจสอบกับเอกสารต้นฉบับก่อนใช้อ้างอิง<br>
-      ทุกคำตอบจะบอกด้วยว่ามาจากไฟล์ไหน เพื่อให้ตรวจสอบย้อนกลับได้<br>
-      ต้องการคุยกับเจ้าหน้าที่จริง ติดต่อ <a href="tel:020000002">ฝ่ายวิชาการ 0-2000-0002</a>
-    </div>
-  </div>
+<main id="top">
 
-  <div class="card">
-    <h2>ถามคำถาม</h2>
-    <p id="boot">กำลังเตรียมระบบ...</p>
-    <div class="chat" id="chat"></div>
-    <div class="row">
-      <input id="q" type="text" placeholder="พิมพ์คำถามแล้วกด Enter" disabled>
-      <button id="send" disabled>ถาม</button>
-    </div>
-    <div class="chips">
-      <span>ลาป่วยกี่วันต้องมีใบรับรองแพทย์</span>
-      <span>ลาพักการศึกษาได้กี่ภาค</span>
-      <span>ถอนรายวิชาแล้วติด W ไหม</span>
-      <span>หอพักค่าเช่าเท่าไร</span>
-    </div>
-  </div>
-
-  <footer>AjGolf AI · รายวิชาปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง · สัปดาห์ที่ 8</footer>
+<section style="background: #0F3D33; color: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 56px 72px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start">
+<h1 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(36px, 4.6vw, 62px); line-height: 1.25; text-wrap: balance">เรียนในห้องเรียน สลับกับทำงานจริง ตั้งแต่ปีแรก</h1>
+<p style="margin: 0; max-width: 34em; font-size: 19px; color: #D5E3DB; text-wrap: pretty">สถาบันการจัดการปัญญาภิวัฒน์ (PIM) จัดการเรียนแบบ Work-based Education นักศึกษาได้เรียนทฤษฎีแล้วออกไปใช้ในสถานประกอบการจริงสลับกันไปจนจบหลักสูตร</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 8px">
+<a href="#admissions" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 30px; border-radius: 26px; background: #F2B01E; color: #14211D; font-weight: 600; font-size: 18px">สมัครเรียน</a>
+<a href="#faculties" style="display: inline-flex; align-items: center; min-height: 52px; font-weight: 500; font-size: 18px; text-decoration: underline; text-underline-offset: 5px">ดูคณะและหลักสูตร</a>
+</div>
 </div>
 
-<script>
-/* โหลด config.js แบบกันเบราว์เซอร์จำไฟล์เก่า */
-(function(){
-  const s = document.createElement("script");
-  s.src = "config.js?t=" + Date.now();
-  s.onerror = () => {
-    document.getElementById("boot").textContent =
-      "ไม่พบไฟล์ config.js\n\nตรวจว่าอัปไฟล์ config.js ไว้โฟลเดอร์เดียวกับ index.html แล้วหรือยัง";
-  };
-  s.onload = () => window.__startApp && window.__startApp();
-  document.head.appendChild(s);
-})();
-</script>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 40px; flex-shrink: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 16px; color: #D5E3DB">ปี 1</span>
+<div style="flex-grow: 1; display: flex; gap: 5px; height: 56px">
+<div style="flex: 3 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 1 1 0; border-radius: 6px; background: #F2B01E"></div>
+<div style="flex: 3 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 1 1 0; border-radius: 6px; background: #F2B01E"></div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 40px; flex-shrink: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 16px; color: #D5E3DB">ปี 2</span>
+<div style="flex-grow: 1; display: flex; gap: 5px; height: 56px">
+<div style="flex: 2 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 2 1 0; border-radius: 6px; background: #F2B01E"></div>
+<div style="flex: 3 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 1 1 0; border-radius: 6px; background: #F2B01E"></div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 40px; flex-shrink: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 16px; color: #D5E3DB">ปี 3</span>
+<div style="flex-grow: 1; display: flex; gap: 5px; height: 56px">
+<div style="flex: 2 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 2 1 0; border-radius: 6px; background: #F2B01E"></div>
+<div style="flex: 2 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 2 1 0; border-radius: 6px; background: #F2B01E"></div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 40px; flex-shrink: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 16px; color: #D5E3DB">ปี 4</span>
+<div style="flex-grow: 1; display: flex; gap: 5px; height: 56px">
+<div style="flex: 3 1 0; border-radius: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></div>
+<div style="flex: 5 1 0; border-radius: 6px; background: #F2B01E"></div>
+</div>
+</div>
+<figcaption style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 54px; font-size: 15px; color: #D5E3DB">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 28px">
+<span style="display: inline-flex; align-items: center; gap: 10px"><span style="width: 22px; height: 14px; border-radius: 4px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.32); box-sizing: border-box"></span>เรียนในห้องเรียน</span>
+<span style="display: inline-flex; align-items: center; gap: 10px"><span style="width: 22px; height: 14px; border-radius: 4px; background: #F2B01E"></span>ทำงานในสถานประกอบการ</span>
+</div>
+<span>ภาพประกอบแนวคิดเท่านั้น ช่วงเวลาจริงต่างกันไปตามหลักสูตร</span>
+</figcaption>
+</figure>
+</div>
+</section>
 
-<script>
-/* ==================================================================
-   AjGolf AI  รุ่นที่สาม
+<section id="about">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 40px 72px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.3">รู้จัก PIM</h2>
+<p style="margin: 0; max-width: 32em; text-wrap: pretty">PIM เป็นสถาบันอุดมศึกษาที่ตั้งขึ้นโดยภาคธุรกิจ จึงออกแบบหลักสูตรร่วมกับสถานประกอบการตั้งแต่ต้น เป้าหมายคือให้บัณฑิตทำงานได้จริงตั้งแต่วันแรกที่เรียนจบ</p>
+<p style="margin: 0; max-width: 32em; text-wrap: pretty">สถาบันเปิดสอนตั้งแต่ระดับปริญญาตรีถึงปริญญาเอก ทั้งหลักสูตรภาษาไทยและหลักสูตรนานาชาติ</p>
+</div>
+<dl style="margin: 0; display: flex; flex-direction: column; border-top: 2px solid #14211D">
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ชื่อเต็ม</dt>
+<dd style="margin: 0; font-weight: 500">สถาบันการจัดการปัญญาภิวัฒน์</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ชื่อภาษาอังกฤษ</dt>
+<dd lang="en" style="margin: 0; font-weight: 500">Panyapiwat Institute of Management</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ก่อตั้ง</dt>
+<dd style="margin: 0; font-weight: 500">พ.ศ. 2550</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ผู้ก่อตั้ง</dt>
+<dd style="margin: 0; font-weight: 500">บริษัท ซีพี ออลล์ จำกัด (มหาชน) ในเครือเจริญโภคภัณฑ์</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ประเภท</dt>
+<dd style="margin: 0; font-weight: 500">สถาบันอุดมศึกษาเอกชน</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">รูปแบบการเรียน</dt>
+<dd style="margin: 0; font-weight: 500">Work-based Education</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ระดับที่เปิดสอน</dt>
+<dd style="margin: 0; font-weight: 500">ปริญญาตรี ปริญญาโท ปริญญาเอก</dd>
+</div>
+<div style="display: grid; grid-template-columns: minmax(110px, 170px) minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #C3D1C8">
+<dt style="color: #3F514A">ที่ตั้ง</dt>
+<dd style="margin: 0; font-weight: 500">ถนนแจ้งวัฒนะ จังหวัดนนทบุรี และวิทยาเขตอีอีซี จังหวัดชลบุรี</dd>
+</div>
+</dl>
+</div>
+</section>
 
-   ค้นหามีสองโหมด  สลับได้ที่ SEARCH_MODE ใน config.js
-     "vector"  ใช้เวกเตอร์จาก OpenRouter  ค้นด้วยความหมาย  ตรงกับที่สอนในสไลด์
-     "local"   เทียบตัวอักษรในเบราว์เซอร์  ไม่ต้องมีกุญแจ ไม่มีวันล่ม
+<section id="wbe" style="background: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.3">Work-based Education คืออะไร</h2>
+<p style="margin: 0; max-width: 38em; text-wrap: pretty">คือการเรียนที่ใช้งานจริงเป็นฐาน ทั้งในการสอน การฝึก และการวิจัย สามส่วนนี้เดินไปพร้อมกันตลอดหลักสูตร</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px 48px">
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 4px solid #F2B01E">
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.35">เรียนจากคนทำงานจริง</h3>
+<span lang="en" style="font-size: 15px; color: #3F514A">Work-based Teaching</span>
+<p style="margin: 0; text-wrap: pretty">เรียนทฤษฎีคู่กับกรณีศึกษาจากธุรกิจจริง โดยอาจารย์ประจำและผู้ปฏิบัติงานจากองค์กร</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 4px solid #F2B01E">
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.35">ฝึกงานในสถานประกอบการ</h3>
+<span lang="en" style="font-size: 15px; color: #3F514A">Work-based Learning</span>
+<p style="margin: 0; text-wrap: pretty">ออกไปทำงานจริงสลับกับช่วงเรียน เพื่อนำสิ่งที่เรียนไปใช้และกลับมาพร้อมคำถามใหม่</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 4px solid #F2B01E">
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.35">วิจัยจากโจทย์ในงาน</h3>
+<span lang="en" style="font-size: 15px; color: #3F514A">Work-based Researching</span>
+<p style="margin: 0; text-wrap: pretty">นำปัญหาที่พบระหว่างทำงานมาเป็นหัวข้อศึกษาและวิจัย ผลที่ได้จึงนำกลับไปใช้ได้</p>
+</div>
+</div>
+</div>
+</section>
 
-   โหมด vector ใช้ไฟล์ vectors.json ที่สร้างไว้ล่วงหน้า
-   จึงเรียก API แค่ครั้งเดียวต่อคำถาม ไม่ใช่ทุกชิ้นเอกสาร
+<section id="faculties">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 40px">
+<h2 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.3">คณะและวิทยาลัย</h2>
+<p style="margin: 0; color: #3F514A">เลือกคณะเพื่อดูหลักสูตรและค่าเล่าเรียน</p>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); column-gap: 48px; border-top: 2px solid #14211D">
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะบริหารธุรกิจ<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะวิศวกรรมศาสตร์และเทคโนโลยี<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะศิลปศาสตร์<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะนิเทศศาสตร์<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะศึกษาศาสตร์<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะนวัตกรรมการจัดการเกษตร<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะการจัดการธุรกิจอาหาร<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะการจัดการโลจิสติกส์และการคมนาคมขนส่ง<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะการจัดการการบริการและการท่องเที่ยว<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">คณะพยาบาลศาสตร์<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">วิทยาลัยนานาชาติ<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+<li style="border-bottom: 1px solid #C3D1C8"><a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; font-weight: 500; font-size: 18px">หลักสูตรระดับบัณฑิตศึกษา<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><path d="M9 5l7 7-7 7"></path></svg></a></li>
+</ul>
+</div>
+</section>
 
-   ถ้า PROVIDER เป็น "worker"  หน้าเว็บนี้ไม่มีกุญแจอยู่เลย
-   ทุกคำขอส่งผ่าน Cloudflare Worker ซึ่งเติมกุญแจให้บนเซิร์ฟเวอร์
+<section id="admissions" style="background: #0F3D33; color: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 44px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.3">สมัครเรียนในสี่ขั้นตอน</h2>
+<p style="margin: 0; color: #D5E3DB">รอบรับสมัครถัดไป [วันที่เปิดรับสมัคร]</p>
+</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 32px 40px">
+<li style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.4)">
+<span aria-hidden="true" style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #F2B01E">1</span>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.4">เลือกหลักสูตรและวิทยาเขต</h3>
+<p style="margin: 0; font-size: 16px; color: #D5E3DB">ดูรายละเอียดหลักสูตร ค่าเล่าเรียน และทุนการศึกษา</p>
+</li>
+<li style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.4)">
+<span aria-hidden="true" style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #F2B01E">2</span>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.4">กรอกใบสมัครออนไลน์</h3>
+<p style="margin: 0; font-size: 16px; color: #D5E3DB">เตรียมสำเนาบัตรประชาชนและผลการเรียนให้พร้อม</p>
+</li>
+<li style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.4)">
+<span aria-hidden="true" style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #F2B01E">3</span>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.4">สอบหรือสัมภาษณ์</h3>
+<p style="margin: 0; font-size: 16px; color: #D5E3DB">รูปแบบการคัดเลือกเป็นไปตามที่แต่ละหลักสูตรกำหนด</p>
+</li>
+<li style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.4)">
+<span aria-hidden="true" style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #F2B01E">4</span>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.4">ยืนยันสิทธิ์และลงทะเบียน</h3>
+<p style="margin: 0; font-size: 16px; color: #D5E3DB">ชำระค่าลงทะเบียนและรายงานตัวตามวันที่กำหนด</p>
+</li>
+</ol>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 30px; border-radius: 26px; background: #F2B01E; color: #14211D; font-weight: 600; font-size: 18px">สมัครเรียน</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 52px; font-weight: 500; font-size: 18px; text-decoration: underline; text-underline-offset: 5px">ดูทุนการศึกษา</a>
+</div>
+</div>
+</section>
 
-   ถ้าโหมด vector มีปัญหา จะถอยไปใช้ local ให้อัตโนมัติ
-   ================================================================== */
+<section id="campuses" style="background: #FFFFFF">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 40px">
+<h2 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.3">สองวิทยาเขต</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 48px">
+<article style="display: flex; flex-direction: column; gap: 18px">
+<div role="img" aria-label="ที่วางภาพวิทยาเขตแจ้งวัฒนะ" style="height: 320px; border-radius: 10px; background: repeating-linear-gradient(135deg, #E3EBE5 0 14px, #EEF3EE 14px 28px); border: 1px solid #C3D1C8; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #3F514A; font-size: 15px">[ภาพวิทยาเขตแจ้งวัฒนะ]</div>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.35">PIM แจ้งวัฒนะ</h3>
+<p style="margin: 0; max-width: 30em">85/1 หมู่ 2 ถนนแจ้งวัฒนะ ตำบลบางตลาด อำเภอปากเกร็ด จังหวัดนนทบุรี 11120</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; align-self: flex-start; font-weight: 600; color: #0F3D33; text-decoration: underline; text-underline-offset: 5px">ดูแผนที่และการเดินทาง</a>
+</article>
+<article style="display: flex; flex-direction: column; gap: 18px">
+<div role="img" aria-label="ที่วางภาพวิทยาเขตอีอีซี" style="height: 320px; border-radius: 10px; background: repeating-linear-gradient(135deg, #E3EBE5 0 14px, #EEF3EE 14px 28px); border: 1px solid #C3D1C8; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #3F514A; font-size: 15px">[ภาพวิทยาเขตอีอีซี]</div>
+<h3 style="margin: 0; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 26px; line-height: 1.35">PIM วิทยาเขตอีอีซี</h3>
+<p style="margin: 0; max-width: 30em">[ที่อยู่วิทยาเขต] อำเภอสัตหีบ จังหวัดชลบุรี</p>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; align-self: flex-start; font-weight: 600; color: #0F3D33; text-decoration: underline; text-underline-offset: 5px">ดูแผนที่และการเดินทาง</a>
+</article>
+</div>
+</div>
+</section>
 
-const PROVIDERS = {
-  // ส่งผ่าน Cloudflare Worker  กุญแจอยู่บนเซิร์ฟเวอร์ ไม่มีในหน้าเว็บ
-  worker: {
-    name: "Worker",
-    url: null,                                  // ประกอบจาก WORKER_URL
-    auth: () => ({}),                           // ไม่ต้องส่งกุญแจ
-    style: "openai",
-  },
-  openrouter: {
-    name: "OpenRouter",
-    url: "https://openrouter.ai/api/v1/chat/completions",
-    auth: (k) => ({ "Authorization": "Bearer " + k }),
-    style: "openai",
-  },
-  groq: {
-    name: "Groq",
-    url: "https://api.groq.com/openai/v1/chat/completions",
-    auth: (k) => ({ "Authorization": "Bearer " + k }),
-    style: "openai",
-  },
-  openai: {
-    name: "OpenAI",
-    url: "https://api.openai.com/v1/chat/completions",
-    auth: (k) => ({ "Authorization": "Bearer " + k }),
-    style: "openai",
-  },
-  gemini: {
-    name: "Google Gemini",
-    url: null,                                  // ประกอบจากชื่อรุ่นทีหลัง
-    auth: (k) => ({ "x-goog-api-key": k }),
-    style: "gemini",
-  },
-};
+</main>
 
-let CFG = {}, CHUNKS = [], INDEX = [];
+<footer id="contact" style="background: #0A2B24; color: #D5E3DB; font-size: 16px">
+<div style="max-width: 1200px; margin: 0 auto; box-sizing: border-box; padding: 64px clamp(20px, 4vw, 48px) 32px; display: flex; flex-direction: column; gap: 48px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 40px 48px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 700; font-size: 34px; line-height: 1; letter-spacing: 0.02em; color: #FFFFFF">PIM</span>
+<span>สถาบันการจัดการปัญญาภิวัฒน์</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0 0 6px; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 18px; color: #FFFFFF">ติดต่อ</h2>
+<span>โทร [เบอร์โทรศัพท์]</span>
+<span>อีเมล [อีเมลติดต่อ]</span>
+<a href="https://www.pim.ac.th" style="display: inline-flex; align-items: center; min-height: 44px; color: #FFFFFF">www.pim.ac.th</a>
+</div>
+<nav aria-label="ลิงก์สำหรับผู้สมัคร" style="display: flex; flex-direction: column">
+<h2 style="margin: 0 0 6px; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 18px; color: #FFFFFF">ผู้สนใจสมัคร</h2>
+<a href="#faculties" style="display: inline-flex; align-items: center; min-height: 44px">คณะและหลักสูตร</a>
+<a href="#admissions" style="display: inline-flex; align-items: center; min-height: 44px">การรับสมัคร</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">ทุนการศึกษา</a>
+</nav>
+<nav aria-label="ลิงก์เกี่ยวกับสถาบัน" style="display: flex; flex-direction: column">
+<h2 style="margin: 0 0 6px; font-family: 'Bai Jamjuree', 'Noto Sans Thai', sans-serif; font-weight: 600; font-size: 18px; color: #FFFFFF">สถาบัน</h2>
+<a href="#about" style="display: inline-flex; align-items: center; min-height: 44px">เกี่ยวกับ PIM</a>
+<a href="#wbe" style="display: inline-flex; align-items: center; min-height: 44px">รูปแบบการเรียน</a>
+<a href="#campuses" style="display: inline-flex; align-items: center; min-height: 44px">วิทยาเขต</a>
+</nav>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.22); font-size: 14px">
+<span>© พ.ศ. 2569 สถาบันการจัดการปัญญาภิวัฒน์</span>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px">นโยบายความเป็นส่วนตัว</a>
+</div>
+</div>
+</footer>
 
-/* ประกอบที่อยู่ของ Worker  ตัดทับปิดท้ายออกให้เอง */
-function workerURL(path){
-  const base = (CFG.WORKER_URL || "").replace(/\/+$/, "");
-  if (!base) throw new Error("ยังไม่ได้ใส่ WORKER_URL ใน config.js");
-  return base + path;
-}
-let VEC = null;            // ข้อมูลจาก vectors.json
-let MODE = "local";        // โหมดที่ใช้งานจริง
-let FELL_BACK = false;     // เคยถอยจาก vector มา local หรือยัง
-const $ = (id) => document.getElementById(id);
-const boot = (t) => { $("boot").textContent = t; };
-
-/* ---------- ขั้นที่ 1  หั่นเอกสาร ---------- */
-async function buildChunks(){
-  const out = [];
-  const base = (CFG.DOCS_BASE || "").replace(/\/+$/, "");
-  for (const f of CFG.FILES) {
-    const url = base ? `${base}/${f}` : f;
-    let text;
-    try {
-      const r = await fetch(url + "?t=" + Date.now());
-      if (!r.ok) throw new Error(r.status);
-      text = (await r.text()).trim();
-    } catch {
-      throw new Error(`อ่านไฟล์ ${url} ไม่ได้\nตรวจว่าไฟล์อยู่ที่เดียวกับ index.html และชื่อสะกดตรงกับรายการ FILES`);
-    }
-    let start = 0, part = 1;
-    while (start < text.length) {
-      out.push({ source: f, part, text: text.slice(start, start + (CFG.CHUNK_SIZE || 500)) });
-      start += (CFG.CHUNK_SIZE || 500) - (CFG.OVERLAP || 100);
-      part++;
-    }
-  }
-  return out;
-}
-
-/* ---------- ขั้นที่ 2  ทำดัชนีไว้ค้น  ทำในเบราว์เซอร์ ไม่เรียก API ----------
-   ใช้วิธีนับชุดตัวอักษรสามตัวติดกัน
-   เหมาะกับภาษาไทยเพราะไม่ต้องตัดคำก่อน                                  */
-function grams(s, n = 3){
-  const t = s.replace(/\s+/g, "");
-  const m = new Map();
-  for (let i = 0; i + n <= t.length; i++) {
-    const g = t.slice(i, i + n);
-    m.set(g, (m.get(g) || 0) + 1);
-  }
-  let sum = 0;
-  for (const v of m.values()) sum += v * v;
-  return { m, norm: Math.sqrt(sum) || 1 };
-}
-
-function similarity(a, b){
-  let num = 0;
-  const [small, big] = a.m.size < b.m.size ? [a, b] : [b, a];
-  for (const [g, v] of small.m) {
-    const w = big.m.get(g);
-    if (w) num += v * w;
-  }
-  return num / (a.norm * b.norm);
-}
-
-/* ---------- ขั้นที่ 3  ค้นหา ---------- */
-function search(question){
-  const q = grams(question);
-  return INDEX
-    .map((g, i) => ({ i, score: similarity(g, q) }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, CFG.TOP_K || 3)
-    .map(({ i, score }) => ({ ...CHUNKS[i], score: Math.round(score * 1000) / 1000 }));
-}
-
-/* ---------- โหมดเวกเตอร์  โหลดไฟล์ที่สร้างไว้ล่วงหน้า ---------- */
-async function loadVectors(){
-  const r = await fetch((CFG.VECTORS_FILE || "vectors.json") + "?t=" + Date.now());
-  if (!r.ok) throw new Error(`อ่านไฟล์ ${CFG.VECTORS_FILE || "vectors.json"} ไม่ได้  รหัส ${r.status}`);
-  const d = await r.json();
-  if (!d.chunks || !d.chunks.length) throw new Error("ไฟล์เวกเตอร์ว่างเปล่า");
-  return d;
-}
-
-/* แปลงคำถามเป็นเวกเตอร์  เรียกหนึ่งครั้งต่อคำถาม
-   ใช้กุญแจตัวเดียวกับตอนตอบคำถาม และต้องใช้รุ่นเดียวกับตอนสร้าง vectors.json */
-async function embedQuestion(q){
-  const viaWorker = CFG.PROVIDER === "worker";
-  const url = viaWorker
-    ? workerURL("/api/v1/embeddings")
-    : "https://openrouter.ai/api/v1/embeddings";
-  const auth = viaWorker ? {} : { "Authorization": "Bearer " + CFG.KEY };
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...auth },
-    body: JSON.stringify({
-      model: VEC.model || CFG.EMBED_MODEL || "nvidia/nemotron-3.5-embed-1b:free",
-      input: [q],
-    }),
-  });
-  if (!res.ok) throw new Error(`แปลงคำถามไม่สำเร็จ ${res.status}  ${(await res.text()).slice(0, 180)}`);
-  const d = await res.json();
-  const v = d.data?.[0]?.embedding;
-  if (!v) throw new Error("ไม่ได้รับเวกเตอร์กลับมา");
-  const n = Math.hypot(...v);
-  return v.map(x => x / n);
-}
-
-function searchVector(qv){
-  return VEC.chunks
-    .map((c, i) => ({ i, score: c.v.reduce((s, x, k) => s + x * qv[k], 0) }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, CFG.TOP_K || 3)
-    .map(({ i, score }) => ({
-      source: VEC.chunks[i].source, part: VEC.chunks[i].part,
-      text: VEC.chunks[i].text, score: Math.round(score * 1000) / 1000,
-    }));
-}
-
-/* เลือกวิธีค้นตามโหมด  ถ้าโหมดเวกเตอร์พัง ให้ถอยไป local */
-async function findChunks(question){
-  if (MODE === "vector") {
-    try {
-      const qv = await embedQuestion(question);
-      return { found: searchVector(qv), how: "เวกเตอร์" };
-    } catch (e) {
-      MODE = "local";
-      FELL_BACK = true;
-      console.warn("โหมดเวกเตอร์มีปัญหา ถอยไปใช้การเทียบตัวอักษร :", e.message);
-      boot(bootLine() + "   (โหมดเวกเตอร์ใช้ไม่ได้ จึงสลับมาเทียบตัวอักษร)");
-    }
-  }
-  return { found: search(question), how: "เทียบตัวอักษร" };
-}
-
-/* ---------- ขั้นที่ 4  ประกอบคำสั่งแล้วส่งให้ LLM ---------- */
-function makePrompt(question, found){
-  const docs = found.map((f, i) =>
-    `[ชิ้นที่ ${i + 1}  จากไฟล์ ${f.source}]\n${f.text}`).join("\n\n");
-  return `คุณคือผู้ช่วยตอบคำถามของคณะบริหารธุรกิจ
-ให้ตอบโดยใช้เฉพาะข้อมูลในเอกสารด้านล่างเท่านั้น
-
-ถ้าเอกสารไม่มีคำตอบ ให้ตอบว่า "ไม่พบข้อมูลนี้ในเอกสารของคณะ"
-แล้วแนะนำให้ติดต่อฝ่ายวิชาการ  ห้ามเดา ห้ามเติมข้อมูลจากความรู้ทั่วไป
-
-ตอบเป็นภาษาไทย สั้น กระชับ
-
-เอกสารที่ค้นเจอ
-${docs}
-
-คำถามจากผู้ใช้
-${question}`;
-}
-
-async function askLLM(prompt){
-  const p = PROVIDERS[CFG.PROVIDER];
-  if (!p) throw new Error(`ไม่รู้จักผู้ให้บริการชื่อ ${CFG.PROVIDER}\nเลือกได้จาก ${Object.keys(PROVIDERS).join("  ")}`);
-
-  let url, body;
-  if (p.style === "gemini") {
-    url = `https://generativelanguage.googleapis.com/v1beta/models/${CFG.MODEL}:generateContent`;
-    body = { contents: [{ parts: [{ text: prompt }] }] };
-  } else {
-    url = CFG.PROVIDER === "worker"
-      ? workerURL("/api/v1/chat/completions")
-      : p.url;
-    body = { model: CFG.MODEL, messages: [{ role: "user", content: prompt }] };
-  }
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...p.auth(CFG.KEY) },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`${res.status}  ${t.slice(0, 250)}`);
-  }
-  const d = await res.json();
-  return p.style === "gemini"
-    ? (d.candidates?.[0]?.content?.parts?.[0]?.text ?? "ไม่ได้รับคำตอบกลับมา")
-    : (d.choices?.[0]?.message?.content ?? "ไม่ได้รับคำตอบกลับมา");
-}
-
-function bootLine(){
-  const files = new Set(CHUNKS.map(c => c.source)).size;
-  const pv = PROVIDERS[CFG.PROVIDER]?.name ?? CFG.PROVIDER;
-  const m = MODE === "vector" ? "เวกเตอร์" : "เทียบตัวอักษร";
-  return `พร้อมใช้งาน   เอกสาร ${files} ไฟล์  ${CHUNKS.length} ชิ้น   `
-       + `ค้นแบบ ${m}   ตอบด้วย ${pv}`;
-}
-
-/* ---------- เริ่มระบบ ---------- */
-window.__startApp = async () => {
-  CFG = window.CONFIG || {};
-  CFG.KEY = (CFG.KEY || "").trim();
-
-  const needKey = CFG.PROVIDER !== "worker";
-  if (needKey && (!CFG.KEY || CFG.KEY.startsWith("ใส่กุญแจ"))) {
-    boot("ยังไม่ได้ใส่กุญแจ  หรือเบราว์เซอร์ยังใช้ไฟล์เก่า\n\n"
-       + "1 เปิด config.js ตรง ๆ ในแท็บใหม่ ดูว่ามีกุญแจจริงไหม\n"
-       + "2 ถ้ามี ให้กด Ctrl และ Shift และ R\n"
-       + "3 ถ้าไม่มี แปลว่ายังไม่ได้ Commit");
-    return;
-  }
-  if (CFG.PROVIDER === "worker" && !CFG.WORKER_URL) {
-    boot("ยังไม่ได้ใส่ที่อยู่ Worker\n\nแก้บรรทัด WORKER_URL ใน config.js ให้เป็นที่อยู่ของ Worker ที่สร้างไว้");
-    return;
-  }
-  if (!CFG.FILES || !CFG.FILES.length) {
-    boot("ไม่มีรายชื่อไฟล์เอกสาร\n\nตรวจรายการ FILES ในไฟล์ config.js");
-    return;
-  }
-
-  try {
-    boot("กำลังอ่านเอกสาร...");
-    CHUNKS = await buildChunks();
-    INDEX = CHUNKS.map(c => grams(c.text));     // เตรียมโหมดสำรองไว้เสมอ
-
-    MODE = "local";
-    if ((CFG.SEARCH_MODE || "local") === "vector") {
-      try {
-        boot("กำลังโหลดไฟล์เวกเตอร์...");
-        VEC = await loadVectors();
-        MODE = "vector";
-      } catch (e) {
-        console.warn("โหลดไฟล์เวกเตอร์ไม่ได้ จึงใช้โหมด local :", e.message);
-      }
-    }
-
-    boot(bootLine());
-
-    $("q").disabled = false;
-    $("send").disabled = false;
-    add("สวัสดีครับ ถามคำถามเกี่ยวกับระเบียบของคณะได้เลย", "bot");
-  } catch (e) {
-    boot("เริ่มไม่สำเร็จ\n\n" + e.message);
-  }
-};
-
-/* ---------- ถามตอบ ---------- */
-function add(text, who, ref){
-  const d = document.createElement("div");
-  d.className = "msg " + who;
-  d.textContent = text;
-  if (ref) {
-    const s = document.createElement("span");
-    s.className = "ref"; s.textContent = ref;
-    d.appendChild(s);
-  }
-  $("chat").appendChild(d);
-  $("chat").scrollTop = $("chat").scrollHeight;
-  return d;
-}
-
-async function ask(){
-  const text = $("q").value.trim();
-  if (!text || !INDEX.length) return;
-  $("q").value = "";
-  add(text, "me");
-  const holder = add("กำลังค้นเอกสารและเรียบเรียงคำตอบ...", "bot");
-
-  try {
-    const { found, how } = await findChunks(text);
-    const answer = await askLLM(makePrompt(text, found));
-    holder.textContent = answer;
-    const s = document.createElement("span");
-    s.className = "ref";
-    s.textContent = `อ้างอิงจาก  ค้นแบบ${how}   ` +
-      found.map(f => `${f.source} ส่วนที่ ${f.part} (${f.score})`).join("   ");
-    holder.appendChild(s);
-  } catch (e) {
-    const m = e.message || String(e);
-    holder.textContent =
-        m.includes("429") ? "เรียกใช้บริการบ่อยเกินกำหนด  รอสักครู่แล้วถามใหม่"
-      : m.includes("401") || m.includes("403")
-        ? "กุญแจใช้ไม่ได้\n\n" + m + "\n\nตรวจว่า PROVIDER กับ KEY ใน config.js เป็นของเจ้าเดียวกัน"
-      : "เกิดข้อผิดพลาด\n\n" + m;
-  }
-  $("chat").scrollTop = $("chat").scrollHeight;
-}
-
-$("send").addEventListener("click", ask);
-$("q").addEventListener("keydown", e => { if (e.key === "Enter") ask(); });
-document.querySelectorAll(".chips span").forEach(el => {
-  el.addEventListener("click", () => { $("q").value = el.textContent; ask(); });
-});
-</script>
+</div>
+<script src="chat-widget.js"></script>
 </body>
 </html>
